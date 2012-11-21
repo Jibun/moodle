@@ -74,7 +74,7 @@ function xmldb_block_workflow_diagram_upgrade($oldversion) {
         }
         
         // assign savepoint reached
-        upgrade_mod_savepoint(true, 2012112101, 'assign');
+        //upgrade_mod_savepoint(true, 2012112101, 'assign');
     }
 
     return true;
