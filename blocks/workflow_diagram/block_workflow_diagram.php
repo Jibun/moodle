@@ -13,7 +13,7 @@ class block_workflow_diagram extends block_base {
         }
 
         $this->content = new stdClass;
-        $this->content->text = 'Hello World';
+        $this->content->text = 'Hello World!';
         $this->content->footer = '';
 
         if (empty($this->instance)) {
