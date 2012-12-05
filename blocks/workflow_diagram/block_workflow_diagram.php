@@ -16,9 +16,9 @@ class block_workflow_diagram extends block_base {
         $this->content->text = 'Hello World! This is the workflow block!';
         $this->content->footer = '';
 
-        if (empty($this->instance)) {
+        /*if (empty($this->instance)) {
             return $this->content;
-        }
+        }*/
 
 
        /* if ($this->page->course->newsitems) {   // Create a nice listing of recent postings
