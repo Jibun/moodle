@@ -11,9 +11,11 @@ class block_workflow_diagram extends block_base {
         if ($this->content !== NULL) {
             return $this->content;
         }
+        
+        $course = $this->page->course;
 
         $this->content = new stdClass;
-        $this->content->text = 'Hello World! This is the workflow block!';
+        $this->content->text = '<a href="'.$CFG->wwwroot.'/blocks/workflow_diagram/index.php?id='.$course->id.'">Editar carga de trabajo</a>';
         $this->content->footer = '';
 
         /*if (empty($this->instance)) {
