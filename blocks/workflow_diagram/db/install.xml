@@ -13,8 +13,8 @@
         <FIELD NAME="hours" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="finishdate"/>
       </FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>
-        <KEY NAME="cm" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id" COMMENT="Reference to the activity we want to refere" PREVIOUS="primary"/>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cmid"/>
+        <KEY NAME="cmid" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id" COMMENT="Reference to the activity we want to refere" PREVIOUS="primary"/>
       </KEYS>
       <!--<INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="The userid for the submission relating to this grade." NEXT="mailed"/>

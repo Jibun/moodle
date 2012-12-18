@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file keeps track of upgrades to the community block
+ * This file keeps track of upgrades to the workflow diagram block
  *
  * Sometimes, changes between versions involve alterations to database structures
  * and other major things that may break installations.
@@ -46,34 +46,8 @@
 function xmldb_block_workflow_diagram_upgrade($oldversion) {
     global $CFG, $DB;
 
-    // Moodle v2.3.0 release upgrade line
+    // Moodle v2.4.0 release upgrade line
     // Put any upgrade step following this
-    $dbman = $DB->get_manager();
-    
-    if ($oldversion < 2012112101) {
-
-        // Define table assign_user_mapping to be created
-        $table = new xmldb_table('block_workflow_diagram');
-        
-        // Adding fields to table block_workflow_diagram
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('cmid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('startdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('finishdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('hours', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-
-        // Adding keys to table block_workflow_diagram
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('cm', XMLDB_KEY_FOREIGN, array('cmid'), 'course_modules', array('id'));
-
-        // Conditionally launch create table for block_workflow_diagram
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-        
-        // assign savepoint reached
-        //upgrade_mod_savepoint(true, 2012112101, 'assign');
-    }
 
     return true;
 }

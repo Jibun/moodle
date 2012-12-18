@@ -25,4 +25,12 @@
 
 $string['news_items:addinstance'] = 'Add a new workflow diagram block';
 $string['news_items:myaddinstance'] = 'Add a new navigation block to the My Moodle page';
-$string['pluginname'] = 'Workflow';
+$string['pluginname'] = 'Workflow Diagram';
+$string['save'] = 'Save';
+$string['create'] = 'Create';
+$string['update'] = 'Update';
+$string['delete'] = 'Delete';
+$string['startdate'] = 'Start date';
+$string['enddate'] = 'End date';
+$string['hoursofwork'] = 'Hours of work';
+$string['workflow'] = 'workflow';

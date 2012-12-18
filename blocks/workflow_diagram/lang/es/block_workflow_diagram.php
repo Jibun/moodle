@@ -23,6 +23,14 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['news_items:addinstance'] = 'Añadir un nuevo bloque de diagrama de flujo de trabajo';
+$string['news_items:addinstance'] = 'AÃ±adir un nuevo bloque de diagrama de flujo de trabajo';
 $string['news_items:myaddinstance'] = 'Add a new navigation block to the My Moodle page';
-$string['pluginname'] = 'Flujo de trabajo';
+$string['pluginname'] = 'Diagrama del flujo de trabajo';
+$string['save'] = 'Guardar';
+$string['create'] = 'Crear';
+$string['update'] = 'Actualizar';
+$string['delete'] = 'Eliminar';
+$string['startdate'] = 'Fecha de inicio';
+$string['enddate'] = 'Fecha final';
+$string['hoursofwork'] = 'Horas de trabajo';
+$string['workflow'] = 'flujo de trabajo';
