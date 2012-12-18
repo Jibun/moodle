@@ -57,16 +57,14 @@ function xmldb_block_workflow_diagram_upgrade($oldversion) {
         
         // Adding fields to table block_workflow_diagram
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('description', XMLDB_TYPE_TEXT, '10', null, XMLDB_NULL, null, null);
+        $table->add_field('cmid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('startdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('finishdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('hours', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
         // Adding keys to table block_workflow_diagram
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('user', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
-        $table->add_key('course', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+        $table->add_key('cm', XMLDB_KEY_FOREIGN, array('cmid'), 'course_modules', array('id'));
 
         // Conditionally launch create table for block_workflow_diagram
         if (!$dbman->table_exists($table)) {
