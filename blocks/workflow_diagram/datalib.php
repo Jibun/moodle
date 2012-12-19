@@ -55,16 +55,38 @@ class block_workflow_diagram_manager {
 
         return $DB->get_record_sql($sql, $params, $strictness);
     }
+    
+    
+    /**
+     * Get the total hours of all the workflow of a course by a given date
+     * @param integer $courseid
+     * @param integer $date
+     * @return float with sum of hours
+     */
+    public function get_hoursperday_by_course_date($courseid, $date, $strictness = IGNORE_MISSING) {
+        global $DB;
+        
+        $params = array('course' => $courseid, 'date' => $date);
+        
+        $sql = 'SELECT SUM(wf.hoursperday) 
+        FROM {block_workflow_diagram} wf 
+        JOIN {course_modules} cm ON cm.id = wf.id 
+        WHERE :date >= wf.startdate AND :date <= wf.finishdate AND cm.course = :course';
+        
+        return $DB->get_record_sql($sql, $params, $strictness);
+     }
 
+     
     /**
      * Add a workflow diagram instance
      * @param integer $cmid
      * @param integer $startdate
      * @param integer $finishdate
      * @param integer $hours
+     * @param float $hoursperday
      * @return id of workflow or false if already added
      */
-    public function block_workflow_diagram_add_instance($cmid, $startdate, $finishdate, $hours) {
+    public function block_workflow_diagram_add_instance($cmid, $startdate, $finishdate, $hours, $hoursperday) {
         global $DB;
 
         $wd = $this->block_workflow_diagram_get_instance($cmid);
@@ -74,6 +96,7 @@ class block_workflow_diagram_manager {
             $wd->startdate = $startdate;
             $wd->finishdate = $finishdate;
             $wd->hours = $hours;
+            $wd->hoursperday = $hoursperday;
             return $DB->insert_record('block_workflow_diagram', $wd);
         } else {
             return false;
@@ -86,9 +109,10 @@ class block_workflow_diagram_manager {
      * @param integer $startdate
      * @param integer $finishdate
      * @param integer $hours
+     * @param float $hoursperday
      * @return id of workflow or false if already added
      */
-     public function add_modify_workflow_diagram_add_or_modify_instance($cmid, $startdate, $finishdate, $hours) {
+     public function add_modify_workflow_diagram_add_or_modify_instance($cmid, $startdate, $finishdate, $hours, $hoursperday) {
         global $DB;
 
         $existingField = $this->block_workflow_diagram_get_instance($cmid);
@@ -97,6 +121,7 @@ class block_workflow_diagram_manager {
         $wd->startdate = $startdate;
         $wd->finishdate = $finishdate;
         $wd->hours = $hours;
+        $wd->hoursperday = $hoursperday;
         if (empty($existingField)) {
             return $DB->insert_record('block_workflow_diagram', $wd);
         } else {
@@ -108,7 +133,7 @@ class block_workflow_diagram_manager {
     /**
      * Return a workflow diagram of a coursemodule
      * @param integer $cmid
-     * @return array of course
+     * @return array of workflow
      */
     public function block_workflow_diagram_get_instance($cmid) {
         global $DB;

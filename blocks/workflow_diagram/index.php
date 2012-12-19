@@ -59,8 +59,13 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
         $splited = explode("-", $enddate);
         $enddate = make_timestamp($splited[0], $splited[1], $splited[2]);
         
+        $period = abs($enddate-$inidate);
+        if($period = floor($period/DAYSECS))
+            $hoursperday = round($hours/$period, 2);
+        else
+            $hoursperday = 0;
         //echo $cmid . ' ' . $inidate . ' ' . $enddate . ' ' . $hours;
-        $wdmanager->add_modify_workflow_diagram_add_or_modify_instance($cmid, $inidate, $enddate, $hours);
+        $wdmanager->add_modify_workflow_diagram_add_or_modify_instance($cmid, $inidate, $enddate, $hours, $hoursperday);
     }
 }else if(optional_param('delete', false, PARAM_BOOL) && confirm_sesskey()){
     $cmid = optional_param('cmid', false, PARAM_INT);
