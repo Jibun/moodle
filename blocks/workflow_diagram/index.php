@@ -36,13 +36,13 @@ $PAGE->set_pagelayout('incourse');
 // You need mod/quiz:manage in addition to question capabilities to access this page.
 //require_capability('mod/quiz:manage', $contexts->lowest());
 // Print the header
-$strworkflow = 'Workflow';
+$strworkflow = get_string("pluginname", "block_workflow_diagram");
 $PAGE->navbar->add($strworkflow);
 $PAGE->set_title($strworkflow);
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
-require_once($CFG->dirroot .'/blocks/workflow_diagram/datalib.php');
+require_once($CFG->dirroot . '/blocks/workflow_diagram/datalib.php');
 $wdmanager = new block_workflow_diagram_manager();
 
 if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
@@ -52,136 +52,219 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
     $hours = optional_param('hours', 0, PARAM_INT);
     if ($cmid === "" || $inidate === "" || $enddate === "" || $hours === "") {
         echo "error!! inutil!";
-    }else{
+    } else {
         $splited = explode("-", $inidate);
         $inidate = make_timestamp($splited[0], $splited[1], $splited[2]);
-        
+
         $splited = explode("-", $enddate);
         $enddate = make_timestamp($splited[0], $splited[1], $splited[2]);
-        
-        $period = abs($enddate-$inidate);
-        if($period = floor($period/DAYSECS))
-            $hoursperday = round($hours/$period, 2);
-        else
+
+        $period = abs($enddate - $inidate);
+        if ($period = floor($period / DAYSECS)) {
+            $hoursperday = round($hours / $period, 2);
+        } else {
             $hoursperday = 0;
+        }
         //echo $cmid . ' ' . $inidate . ' ' . $enddate . ' ' . $hours;
         $wdmanager->add_modify_workflow_diagram_add_or_modify_instance($cmid, $inidate, $enddate, $hours, $hoursperday);
     }
-}else if(optional_param('delete', false, PARAM_BOOL) && confirm_sesskey()){
+} else if (optional_param('delete', false, PARAM_BOOL) && confirm_sesskey()) {
     $cmid = optional_param('cmid', false, PARAM_INT);
     $wdmanager->block_workflow_diagram_remove_instance($cmid);
 }
 
 $formstart = '<form method="post" action="index.php?id=' . $id . '" class="workflowform">';
 $formend = '</form>';
-$formhiddensave =  '<input type="hidden" name="sesskey" value="'.sesskey().'" />
+$formhiddensave = '<input type="hidden" name="sesskey" value="' . sesskey() . '" />
                         <input type="hidden" name="savechanges" value="1" />';
-$formhiddendelete =  '<input type="hidden" name="sesskey" value="'.sesskey().'" />
+$formhiddendelete = '<input type="hidden" name="sesskey" value="' . sesskey() . '" />
                         <input type="hidden" name="delete" value="1" />';
 
-$strassignments = get_string("modulenameplural", "assign");
-// Get all the appropriate data
-if ($assignments = get_all_instances_in_course("assign", $course)) {
-    //notice(get_string('thereareno', 'moodle', $strplural), new moodle_url('/course/view.php', array('id' => $course->id)));
-    //die;
-// Check if we need the closing date header
-    $table = new html_table();
-    $table->head = array($strassignments, get_string('duedate', 'assign'));
-    $table->align = array('left', 'left', 'center');
-    $table->data = array();
-    foreach ($assignments as $assignment) {
-        $cm = get_coursemodule_from_instance('assign', $assignment->id, 0, false, MUST_EXIST);
+$activitiesarray = array('assign', 'chat', 'choice', 'data', 'forum', 'glossary', 'lesson', 
+    'lti', 'quiz', 'scorm', 'survey', 'wiki', 'workshop');
 
-        $link = html_writer::link(new moodle_url('/mod/assign/view.php', array('id' => $cm->id)), $assignment->name);
-        $date = '-';
-        if (!empty($assignment->duedate)) {
-            $date = userdate($assignment->duedate);
+$noactivities = true;
+
+for ($i = 0; $i < 13; $i++) {
+    $stractivities = get_string("modulenameplural", $activitiesarray[$i]);
+    $activities = get_all_instances_in_course($activitiesarray[$i], $course);
+    if ($activities) {
+
+        $nodatefields = false;
+        $strtime1 = 'nothing';
+        $strtime2 = 'nothing';
+        $time1 = 'nothing';
+        $time2 = 'nothing';
+        if($activitiesarray[$i] === 'quiz'){
+            $strtime1 = 'quizopens';
+            $strtime2 = 'quizcloses';
+            $time1 = 'timeopen';
+            $time2 = 'timeclose';
+        }else if($activitiesarray[$i] === 'assign'){
+            $strtime1 = 'allowsubmissionsfromdate';
+            $strtime2 = 'duedate';
+            $time1 = 'allowsubmissionsfromdate';
+            $time2 = 'duedate';
+        }else if($activitiesarray[$i] === 'forum'){
+            //nada
+            /*$strtime1 = 'assesstimestart';
+            $strtime2 = 'assesstimefinish';
+            $time1 = 'assesstimestart';
+            $time2 = 'assesstimefinish';*/
+            $nodatefields = true;
+        }else if($activitiesarray[$i] === 'data'){
+            $strtime1 = 'availablefromdate';
+            $strtime2 = 'availabletodate';
+            $time1 = 'timeavailablefrom';
+            $time2 = 'timeavailableto';
+        }else if($activitiesarray[$i] === 'lti'){
+            //nada
+            $nodatefields = true;
+        }else if($activitiesarray[$i] === 'chat'){
+            //nada
+            $nodatefields = true;
+        }else if($activitiesarray[$i] === 'choice'){
+            $strtime1 = 'choiceopen';
+            $strtime2 = 'choiceclose';
+            $time1 = 'timeopen';
+            $time2 = 'timeclose';
+        }else if($activitiesarray[$i] === 'survey'){
+            //nada
+            $nodatefields = true;
+        }else if($activitiesarray[$i] === 'glossary'){
+            //nada
+            /*$strtime1 = 'assesstimestart';
+            $strtime2 = 'assesstimefinish';
+            $time1 = 'assesstimestart';
+            $time2 = 'assesstimefinish';*/
+            $nodatefields = true;
+        }else if($activitiesarray[$i] === 'lesson'){
+            $strtime1 = 'lessonopens';
+            $strtime2 = 'lessoncloses';
+            $time1 = 'available';
+            $time2 = 'deadline';
+        }else if($activitiesarray[$i] === 'workshop'){
+            //nada
+            $nodatefields = true;
+        }else if($activitiesarray[$i] === 'wiki'){
+            //nada
+            $nodatefields = true;
+        }else if($activitiesarray[$i] === 'scorm'){
+            $strtime1 = 'scormopen';
+            $strtime2 = 'duedate';
+            $time1 = 'timeopen';
+            $time2 = 'timeclose';
         }
+        
+        
+        $table = new html_table();
+        if($nodatefields)
+            $table->head = array($stractivities, get_string('startdate', 'block_workflow_diagram'),
+            get_string('enddate', 'block_workflow_diagram'), get_string('hoursofwork', 'block_workflow_diagram'),
+            get_string('save', 'block_workflow_diagram') . " " . get_string('workflow', 'block_workflow_diagram'),
+            get_string('delete', 'block_workflow_diagram') . " " . get_string('workflow', 'block_workflow_diagram'));
+        else
+            $table->head = array($stractivities, get_string($strtime1, $activitiesarray[$i]), 
+            get_string($strtime2, $activitiesarray[$i]), get_string('startdate', 'block_workflow_diagram'),
+            get_string('enddate', 'block_workflow_diagram'), get_string('hoursofwork', 'block_workflow_diagram'),
+            get_string('save', 'block_workflow_diagram') . " " . get_string('workflow', 'block_workflow_diagram'),
+            get_string('delete', 'block_workflow_diagram') . " " . get_string('workflow', 'block_workflow_diagram'));
+        $table->align = array('left');
+        $table->data = array();
+        foreach ($activities as $activity) {
+            $cm = get_coursemodule_from_instance($activitiesarray[$i], $activity->id, 0, false, MUST_EXIST);
+            $formhiddencm = '<input type="hidden" name="cmid" value="' . $cm->id . '" />';
 
-        $row = array($link, $date);
-        $table->data[] = $row;
-    }
-    echo html_writer::table($table);
-} else {
-    $noassignments = true;
-}
-
-$strquizzes = get_string("modulenameplural", "quiz");
-if ($quizzes = get_all_instances_in_course("quiz", $course)) {
-    //notice(get_string('thereareno', 'moodle', $strquizzes), "../../course/view.php?id=$course->id");
-    //die;
-
-    $table2 = new html_table();
-    $table2->head = array($strquizzes, get_string('quizcloses', 'quiz'), get_string('startdate', 'block_workflow_diagram'), 
-                    get_string('enddate', 'block_workflow_diagram'), get_string('hoursofwork', 'block_workflow_diagram'), 
-                    get_string('save', 'block_workflow_diagram')." ".get_string('workflow', 'block_workflow_diagram'), 
-                    get_string('delete', 'block_workflow_diagram')." ".get_string('workflow', 'block_workflow_diagram'));
-    $table2->align = array('left');
-    $table2->data = array();
-    foreach ($quizzes as $quiz) {
-        $cm = get_coursemodule_from_instance('quiz', $quiz->id, 0, false, MUST_EXIST);
-        $formhiddencm = '<input type="hidden" name="cmid" value="'.$cm->id.'" />';
-
-        $link = html_writer::link(new moodle_url('/mod/quiz/view.php', array('id' => $cm->id)), $quiz->name);
-        $date = '-';
-        if ($quiz->timeclose) {
-            $date = userdate($quiz->timeclose);
-            $datearray = usergetdate($quiz->timeclose);
-            if(strlen($datearray['mon']) === 1){
-                $datearray['mon'] = '0'.$datearray['mon'];
+            $link = html_writer::link(new moodle_url('/mod/'.$activitiesarray[$i].'/view.php', array('id' => $cm->id)), $activity->name);
+            if(!$nodatefields){
+                $date1 = '-';
+                if ($activity->$time1) {
+                    $date1 = userdate($activity->$time1);
+                    $datearray1 = usergetdate($activity->$time1);
+                }
+                $date2 = '-';
+                if ($activity->$time2) {
+                    $date2 = userdate($activity->$time2);
+                    $datearray2 = usergetdate($activity->$time2);
+                }
             }
-            if(strlen($datearray['mday']) === 1){
-                $datearray['mday'] = '0'.$datearray['mday'];
-            }
-        }
 
-        if (!$wf = $wdmanager->block_workflow_diagram_get_instance($cm->id)) {
+            if (!$wf = $wdmanager->block_workflow_diagram_get_instance($cm->id)) {
+                if(!$nodatefields){
+                    if (strlen($datearray1['mon']) === 1) {
+                        $datearray1['mon'] = '0' . $datearray1['mon'];
+                    }
+                    if (strlen($datearray1['mday']) === 1) {
+                        $datearray1['mday'] = '0' . $datearray1['mday'];
+                    }
+                    if (strlen($datearray2['mon']) === 1) {
+                        $datearray2['mon'] = '0' . $datearray2['mon'];
+                    }
+                    if (strlen($datearray2['mday']) === 1) {
+                        $datearray2['mday'] = '0' . $datearray2['mday'];
+                    }
+                    
+                    if ($activity->$time1) {
+                        $inidate = '<input type="date" name="initialdate" value="' . $datearray1['year'] . "-" . $datearray1['mon'] . "-" . $datearray1['mday'] . '"/>';
+                    } else {
+                        $inidate = $formstart . '<input type="date" name="initialdate"/>';
+                    }
+                    if ($activity->$time2) {
+                        $enddate = '<input type="date" name="finaldate" value="' . $datearray2['year'] . "-" . $datearray2['mon'] . "-" . $datearray2['mday'] . '"/>';
+                    } else {
+                        $enddate = '<input type="date" name="finaldate"/>';
+                    }
+                }
+                
+                $hours = '<input type="text" name="hours" value="0" />';
 
-            $inidate = $formstart.'<input type="date" name="initialdate"/>';
-            if ($quiz->timeclose) {
-                $enddate = '<input type="date" name="finaldate" value="'.$datearray['year']."-".$datearray['mon']."-".$datearray['mday'].'"/>';
+                $boton = $formhiddensave . $formhiddencm . '<input type="submit" class="pointssubmitbutton" value="' . get_string('create', 'block_workflow_diagram') . '" />' . $formend;
+                $delete = '';
             } else {
-                $enddate = '<input type="date" name="finaldate"/>';
+                $datearray = usergetdate($wf->startdate);
+                if (strlen($datearray['mon']) === 1) {
+                    $datearray['mon'] = '0' . $datearray['mon'];
+                }
+                if (strlen($datearray['mday']) === 1) {
+                    $datearray['mday'] = '0' . $datearray['mday'];
+                }
+                $inidate = $formstart . '<input type="date" name="initialdate" value="' . $datearray['year'] . "-" . $datearray['mon'] . "-" . $datearray['mday'] . '"/>';
+                $datearray = usergetdate($wf->finishdate);
+                if (strlen($datearray['mon']) === 1) {
+                    $datearray['mon'] = '0' . $datearray['mon'];
+                }
+                if (strlen($datearray['mday']) === 1) {
+                    $datearray['mday'] = '0' . $datearray['mday'];
+                }
+                $enddate = '<input type="date" name="finaldate" value="' . $datearray['year'] . "-" . $datearray['mon'] . "-" . $datearray['mday'] . '"/>';
+                $hours = '<input type="text" name="hours" value="' . $wf->hours . '" />';
+                $boton = $formhiddensave . $formhiddencm . '<input type="submit" class="pointssubmitbutton" value="' . get_string('update', 'block_workflow_diagram') . '" />' . $formend;
+                $delete = $formstart . $formhiddendelete . $formhiddencm . '<input type="submit" class="pointssubmitbutton" value="' . get_string('delete', 'block_workflow_diagram') . '" />' . $formend;
             }
-            $hours = '<input type="text" name="hours" value="0" />';
 
-            $boton = $formhiddensave.$formhiddencm.'<input type="submit" class="pointssubmitbutton" value="'.get_string('create', 'block_workflow_diagram').'" />'.$formend;
-            $delete = '';
-        } else {
-            $datearray = usergetdate($wf->startdate);
-            if(strlen($datearray['mon']) === 1){
-                $datearray['mon'] = '0'.$datearray['mon'];
-            }
-            if(strlen($datearray['mday']) === 1){
-                $datearray['mday'] = '0'.$datearray['mday'];
-            }
-            $inidate = $formstart.'<input type="date" name="initialdate" value="'.$datearray['year']."-".$datearray['mon']."-".$datearray['mday'].'"/>';
-            $datearray = usergetdate($wf->finishdate);
-            if(strlen($datearray['mon']) === 1){
-                $datearray['mon'] = '0'.$datearray['mon'];
-            }
-            if(strlen($datearray['mday']) === 1){
-                $datearray['mday'] = '0'.$datearray['mday'];
-            }
-            $enddate = '<input type="date" name="finaldate" value="'.$datearray['year']."-".$datearray['mon']."-".$datearray['mday'].'"/>';
-            $hours = '<input type="text" name="hours" value="'.$wf->hours.'" />';
-            $boton = $formhiddensave.$formhiddencm.'<input type="submit" class="pointssubmitbutton" value="'.get_string('update', 'block_workflow_diagram').'" />'.$formend;
-            $delete = $formstart.$formhiddendelete.$formhiddencm.'<input type="submit" class="pointssubmitbutton" value="'.get_string('delete', 'block_workflow_diagram').'" />'.$formend;
+            if ($nodatefields)
+                $row = array($link, $inidate, $enddate, $hours, $boton, $delete);
+            else
+                $row = array($link, $date1, $date2, $inidate, $enddate, $hours, $boton, $delete);
+            
+            $table->data[] = $row;
         }
 
-        $row = array($link, $date, $inidate, $enddate, $hours, $boton, $delete);
-        $table2->data[] = $row;
+        echo html_writer::table($table);
+        
+        $noactivities = false;
     }
-
-    echo html_writer::table($table2);
-} else {
-    $noquizes = true;
 }
 
-if ($noassignments && $noquizes) {
+if ($noactivities) {
     notice(get_string('thereareno', 'moodle', $stractivities), "../../course/view.php?id=$course->id");
     die;
 }
+
+/*if ($noassignments && $noquizes && $noforums && $noltis && $nochats && $nochoices && $nosurveys && $noglossarys && $nolessons && $noworkshops && $nowikis && $noscorms) {
+    notice(get_string('thereareno', 'moodle', $stractivities), "../../course/view.php?id=$course->id");
+    die;
+}*/
 
 echo $OUTPUT->footer();
 
