@@ -42,7 +42,7 @@ if (ajaxenabled()) { //Si tenim javascript
         array('date' => '5/2/2010', 'calcul' => 3, 'fisica' => 1),
         );
     $jsonatr1 = json_encode($atr1);
-    echo html_writer::tag('div', $jsonatr1, array('id' => 'debugtext'));
+    echo html_writer::tag('div', 'Prova de array PHP a JSON '.$jsonatr1, array('id' => 'debugtext'));
 
     //El següent equival a echo '<div id=mychart></div>';
     echo html_writer::tag('div', null, array('id' => 'mychart')); //Div que conté la gràfica

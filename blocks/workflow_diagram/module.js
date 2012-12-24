@@ -38,16 +38,16 @@ M.block_workflow_diagram = {
         
         YUI().use('charts', function (Y) {
             // Data for the chart
-            var myDataValues = [ 
-                {category: days[0] + "/" + months[0] + "/" + years[0], calcul:2, fisica:0}, 
-                {category: days[1] + "/" + months[1] + "/" + years[1], calcul:0, fisica:2}, 
-                {category: days[2] + "/" + months[2] + "/" + years[2], calcul:1, fisica:1}, 
-                {category: days[3] + "/" + months[3] + "/" + years[3], calcul:2, fisica:1}, 
-                {category: days[4] + "/" + months[4] + "/" + years[4], calcul:2, fisica:0}
+            var datavalues = [ 
+                {date: months[0] + "/" + days[0] + "/" + years[0], calcul:2, fisica:0}, 
+                {date: months[1] + "/" + days[1] + "/" + years[1], calcul:0, fisica:2}, 
+                {date: months[2] + "/" + days[2] + "/" + years[2], calcul:1, fisica:1}, 
+                {date: months[3] + "/" + days[3] + "/" + years[3], calcul:2, fisica:1}, 
+                {date: months[4] + "/" + days[4] + "/" + years[4], calcul:2, fisica:0}
             ];
 
             var mychart = new Y.Chart({
-                dataProvider:data, 
+                dataProvider:datavalues, 
                 render:"#mychart", //Indica el <div> on es mostrarà
                 type:"column", //Tipus de gràfica, es pot canviar
                 width: 500,
