@@ -37,3 +37,4 @@ $string['workflow'] = 'Flujo de trabajo';
 $string['wfsettings'] = 'Ajustes de WfD';
 $string['graphview'] = 'WfD: Diagrama';
 $string['invalidcourse'] = 'Curso no adecuado';
+$string['jsdisabled'] = 'Error: Javascript está desactivado';
