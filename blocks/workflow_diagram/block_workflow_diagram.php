@@ -50,7 +50,7 @@ class block_workflow_diagram extends block_list {
         
         $context = get_context_instance(CONTEXT_COURSE, $course->id);
         if (has_capability('moodle/course:manageactivities', $context)) {
-            $this->content->items[] = '<a href="'.$CFG->wwwroot.'/blocks/workflow_diagram/index.php?id='.$course->id.'">Editar carga de trabajo</a>';
+            $this->content->items[] = '<a href="'.$CFG->wwwroot.'/blocks/workflow_diagram/index.php?id='.$course->id.'">'.get_string('editwf', 'block_workflow_diagram').'</a>';
         }
         
         //Link a veure gràfic passant arguments
