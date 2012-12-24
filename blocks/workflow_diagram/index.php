@@ -16,14 +16,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Displays information about all the assignment modules in the requested course
+ * Edition page for the workflow block
  *
- * @package   mod_assign
- * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @package   blocks
+ * @subpackage workflow_diagram
+ * @author Ivan Latorre Negrell
+ * @copyright (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once("../../config.php");
-//require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 $id = required_param('id', PARAM_INT); // Course ID
 
@@ -32,9 +33,10 @@ require_login($course);
 $PAGE->set_url('/mod/assign/index.php', array('id' => $id));
 $PAGE->set_pagelayout('incourse');
 
-//add_to_log($course->id, "assign", "view all", "index.php?id=$course->id", "");
-// You need mod/quiz:manage in addition to question capabilities to access this page.
-//require_capability('mod/quiz:manage', $contexts->lowest());
+// You need moodle/course:manageactivities in addition to question capabilities to access this page.
+$context = get_context_instance(CONTEXT_COURSE, $course->id);
+require_capability('moodle/course:manageactivities', $context);
+
 // Print the header
 $strworkflow = get_string("pluginname", "block_workflow_diagram");
 $PAGE->navbar->add($strworkflow);
@@ -260,11 +262,6 @@ if ($noactivities) {
     notice(get_string('thereareno', 'moodle', $stractivities), "../../course/view.php?id=$course->id");
     die;
 }
-
-/*if ($noassignments && $noquizes && $noforums && $noltis && $nochats && $nochoices && $nosurveys && $noglossarys && $nolessons && $noworkshops && $nowikis && $noscorms) {
-    notice(get_string('thereareno', 'moodle', $stractivities), "../../course/view.php?id=$course->id");
-    die;
-}*/
 
 echo $OUTPUT->footer();
 
