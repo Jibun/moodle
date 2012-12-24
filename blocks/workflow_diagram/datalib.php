@@ -61,17 +61,17 @@ class block_workflow_diagram_manager {
      * Get the total hours of all the workflow of a course by a given date
      * @param integer $courseid
      * @param integer $date
-     * @return float with sum of hours
+     * @return float with sum of hours with name hours
      */
     public function get_hoursperday_by_course_date($courseid, $date, $strictness = IGNORE_MISSING) {
         global $DB;
         
-        $params = array('course' => $courseid, 'date' => $date);
+        $params = array('date1' => $date, 'date2' => $date, 'course' => $courseid );
         
-        $sql = 'SELECT SUM(wf.hoursperday) 
+        $sql = 'SELECT SUM(wf.hoursperday) as hours
         FROM {block_workflow_diagram} wf 
-        JOIN {course_modules} cm ON cm.id = wf.id 
-        WHERE :date >= wf.startdate AND :date <= wf.finishdate AND cm.course = :course';
+        JOIN {course_modules} cm ON cm.id = wf.cmid 
+        WHERE :date1 >= wf.startdate AND :date2 <= wf.finishdate AND cm.course = :course';
         
         return $DB->get_record_sql($sql, $params, $strictness);
      }
