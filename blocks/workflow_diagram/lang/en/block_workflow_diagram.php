@@ -34,3 +34,7 @@ $string['startdate'] = 'Start date';
 $string['enddate'] = 'End date';
 $string['hoursofwork'] = 'Hours of work';
 $string['workflow'] = 'workflow';
+$string['viewgraphic'] = 'View graph';
+$string['wfsettings'] = 'WfD Settings';
+$string['graphview'] = 'WfD: Graph view';
+$string['invalidcourse'] = 'Invalid course';

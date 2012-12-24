@@ -6,7 +6,7 @@ class block_workflow_diagram extends block_base {
     }
 
     function get_content() {
-        global $CFG, $USER;
+        global $CFG, $COURSE, $USER;
 
         if ($this->content !== NULL) {
             return $this->content;
@@ -16,7 +16,10 @@ class block_workflow_diagram extends block_base {
 
         $this->content = new stdClass;
         $this->content->text = '<a href="'.$CFG->wwwroot.'/blocks/workflow_diagram/index.php?id='.$course->id.'">Editar carga de trabajo</a>';
-        $this->content->footer = '';
+        
+        //Link a veure gràfic passant arguments
+        $url = new moodle_url('/blocks/workflow_diagram/graphview.php', array('blockid' => $this->instance->id, 'courseid' => $COURSE->id));
+        $this->content->footer = html_writer::link($url, get_string('viewgraphic', 'block_workflow_diagram'));
 
         /*if (empty($this->instance)) {
             return $this->content;
