@@ -47,11 +47,16 @@ M.block_workflow_diagram = {
             ];
 
             var mychart = new Y.Chart({
-                dataProvider:myDataValues, 
+                dataProvider:data, 
                 render:"#mychart", //Indica el <div> on es mostrarà
-                type:"combo", //Tipus de gràfica, es pot canviar
+                type:"column", //Tipus de gràfica, es pot canviar
                 width: 500,
                 height: 300,
+                title: "Workflow Diagram",
+                stacked:true,
+                categoryKey:"date", 
+                categoryType:"time",
+                
                 horizontalGridlines: {
                     styles: {
                         line: {
@@ -65,8 +70,7 @@ M.block_workflow_diagram = {
                             color: "#dad8c9"
                         }
                     }
-                },
-                stacked:true
+                }
             });
         });
     }

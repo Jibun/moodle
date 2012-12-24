@@ -35,11 +35,21 @@ echo $OUTPUT->header();
  */
 
 
-//Equival a echo '<div id=mychart></div>';
-echo html_writer::tag('div', null, array('id' => 'mychart')); //Div que conté la gràfica
+if (ajaxenabled()) { //Si tenim javascript
+    
+    $atr1 = array ( //Prova de passar array PHP a JSON
+        array('date' => '5/1/2010', 'calcul' => 2, 'fisica' => 0),
+        array('date' => '5/2/2010', 'calcul' => 3, 'fisica' => 1),
+        );
+    $jsonatr1 = json_encode($atr1);
+    echo html_writer::tag('div', $jsonatr1, array('id' => 'debugtext'));
 
-if (ajaxenabled()) {
-    $PAGE->requires->js_init_call('M.block_workflow_diagram.printgraph');
+    //El següent equival a echo '<div id=mychart></div>';
+    echo html_writer::tag('div', null, array('id' => 'mychart')); //Div que conté la gràfica
+    $PAGE->requires->js_init_call('M.block_workflow_diagram.printgraph', array());
+}
+else {
+    echo html_writer::tag('div', get_string('jsdisabled', 'block_workflow_diagram'), array('id' => 'mychart')); //Div que conté la gràfica
 }
 
 /*
