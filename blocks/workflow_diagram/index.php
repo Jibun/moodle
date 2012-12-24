@@ -175,7 +175,7 @@ for ($i = 0; $i < 13; $i++) {
             $cm = get_coursemodule_from_instance($activitiesarray[$i], $activity->id, 0, false, MUST_EXIST);
             $formhiddencm = '<input type="hidden" name="cmid" value="' . $cm->id . '" />';
 
-            $link = html_writer::link(new moodle_url('/mod/'.$activitiesarray[$i].'/view.php', array('id' => $cm->id)), $activity->name);
+            $link = $formstart . html_writer::link(new moodle_url('/mod/'.$activitiesarray[$i].'/view.php', array('id' => $cm->id)), $activity->name);
             if(!$nodatefields){
                 $date1 = '-';
                 if ($activity->$time1) {
@@ -207,7 +207,7 @@ for ($i = 0; $i < 13; $i++) {
                     if ($activity->$time1) {
                         $inidate = '<input type="date" name="initialdate" value="' . $datearray1['year'] . "-" . $datearray1['mon'] . "-" . $datearray1['mday'] . '"/>';
                     } else {
-                        $inidate = $formstart . '<input type="date" name="initialdate"/>';
+                        $inidate = '<input type="date" name="initialdate"/>';
                     }
                     if ($activity->$time2) {
                         $enddate = '<input type="date" name="finaldate" value="' . $datearray2['year'] . "-" . $datearray2['mon'] . "-" . $datearray2['mday'] . '"/>';
@@ -228,7 +228,7 @@ for ($i = 0; $i < 13; $i++) {
                 if (strlen($datearray['mday']) === 1) {
                     $datearray['mday'] = '0' . $datearray['mday'];
                 }
-                $inidate = $formstart . '<input type="date" name="initialdate" value="' . $datearray['year'] . "-" . $datearray['mon'] . "-" . $datearray['mday'] . '"/>';
+                $inidate = '<input type="date" name="initialdate" value="' . $datearray['year'] . "-" . $datearray['mon'] . "-" . $datearray['mday'] . '"/>';
                 $datearray = usergetdate($wf->finishdate);
                 if (strlen($datearray['mon']) === 1) {
                     $datearray['mon'] = '0' . $datearray['mon'];
