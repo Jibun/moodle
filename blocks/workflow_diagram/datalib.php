@@ -68,9 +68,9 @@ class block_workflow_diagram_manager {
         
         $params = array('course' => $courseid, 'date' => $date);
         
-        $sql = 'SELECT SUM(wf.hoursperday) 
-        FROM {block_workflow_diagram} wf 
-        JOIN {course_modules} cm ON cm.id = wf.id 
+        $sql = 'SELECT SUM(wf.hoursperday)
+        FROM {block_workflow_diagram} wf
+        JOIN {course_modules} cm ON cm.id = wf.id
         WHERE :date >= wf.startdate AND :date <= wf.finishdate AND cm.course = :course';
         
         return $DB->get_record_sql($sql, $params, $strictness);
@@ -150,6 +150,28 @@ class block_workflow_diagram_manager {
         global $DB;
         return $DB->delete_records('block_workflow_diagram',
                 array('cmid' => $cmid));
+    }
+    
+    public function block_workflow_diagram_get_json_array_for_chart($courseid) {
+        
+        $date = userdate(time());
+        //$array[0] = $this->get_hoursperday_by_course_date($courseid, $date);
+        
+        /*
+         * Aquí s'hauria de posar codi per a obtenir les dades reals!
+         */
+        
+        
+        $array = array ( //Prova de passar array PHP a JSON
+            array('date' => '5/1/2010', 'ass1' => 2, 'ass2' => 0),
+            array('date' => '5/2/2010', 'ass1' => 1, 'ass2' => 1),
+            array('date' => '5/3/2010', 'ass1' => 2, 'ass2' => 2),
+            array('date' => '5/4/2010', 'ass1' => 0, 'ass2' => 1),
+            array('date' => '5/5/2010', 'ass1' => 2, 'ass2' => 2),
+            array('date' => '5/6/2010', 'ass1' => 1, 'ass2' => 1),
+        );
+        
+        return json_encode($array);
     }
 
 }
