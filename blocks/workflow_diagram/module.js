@@ -7,6 +7,8 @@ M.block_workflow_diagram = {
     printgraph : function(Y, params){
         this.Y = Y;
         
+        /* Ara està a datalib.php!
+         *
         //First, get the date
         
         var date = new Date();
@@ -35,8 +37,11 @@ M.block_workflow_diagram = {
             months[i] = actMonth;
             years[i] = actYear;
         }
+        */
         
         YUI().use('charts', function (Y) {
+            
+            /*
             // Data for the chart
             var datavalues = [
                 {date: months[0] + "/" + days[0] + "/" + years[0], calcul:2, fisica:0}, 
@@ -45,8 +50,9 @@ M.block_workflow_diagram = {
                 {date: months[3] + "/" + days[3] + "/" + years[3], calcul:2, fisica:1}, 
                 {date: months[4] + "/" + days[4] + "/" + years[4], calcul:2, fisica:0}
             ];
+            */
             
-            var data = eval('(' + params + ')');
+            var data = eval('(' + params + ')'); //Get data from JSON parameter
 
             var mychart = new Y.Chart({
                 dataProvider:data,
