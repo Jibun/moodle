@@ -2,7 +2,8 @@
  
 require_once('../../config.php');
 require_once($CFG->dirroot . '/blocks/workflow_diagram/datalib.php');
- 
+$wdmanager = new block_workflow_diagram_manager();
+
 global $DB, $OUTPUT, $PAGE;
  
 // Check for all required variables.
@@ -37,12 +38,8 @@ echo $OUTPUT->header();
 
 if (ajaxenabled()) { //Si tenim javascript
     
-    $atr1 = array ( //Prova de passar array PHP a JSON
-        array('date' => '5/1/2010', 'calcul' => 2, 'fisica' => 0),
-        array('date' => '5/2/2010', 'calcul' => 3, 'fisica' => 1),
-        );
-    $jsonatr1 = json_encode($atr1);
-    echo html_writer::tag('div', 'Prova de array PHP a JSON '.$jsonatr1, array('id' => 'debugtext'));
+    $jsonatr1 = $wdmanager->block_workflow_diagram_get_json_array_for_chart($courseid);
+    echo html_writer::tag('div', 'Prova de array PHP a JSON: '.$jsonatr1, array('id' => 'debugtext'));
 
     //El següent equival a echo '<div id=mychart></div>';
     echo html_writer::tag('div', null, array('id' => 'mychart')); //Div que conté la gràfica

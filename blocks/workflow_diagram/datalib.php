@@ -72,7 +72,7 @@ class block_workflow_diagram_manager {
         FROM {block_workflow_diagram} wf 
         JOIN {course_modules} cm ON cm.id = wf.cmid 
         WHERE :date1 >= wf.startdate AND :date2 <= wf.finishdate AND cm.course = :course';
-        
+    
         return $DB->get_record_sql($sql, $params, $strictness);
      }
 
@@ -150,6 +150,31 @@ class block_workflow_diagram_manager {
         global $DB;
         return $DB->delete_records('block_workflow_diagram',
                 array('cmid' => $cmid));
+    }
+    
+    public function block_workflow_diagram_get_json_array_for_chart($courseid) {
+        
+        //Get current week
+        
+        $unixtime = time(); //Seconds passed since...
+        $dayinseconds = 86400; //Number of seconds in one day
+        for ($i=0; $i<7; $i++) {
+            $date[$i] = usergetdate($unixtime + ($i * $dayinseconds));
+        }
+        
+        //Fill the data
+        
+        $array = array (
+            array('date' => $date[0]['mon'].'/'.$date[0]['mday'].'/'.$date[0]['year'], 'ass1' => 2, 'ass2' => 1),
+            array('date' => $date[1]['mon'].'/'.$date[1]['mday'].'/'.$date[1]['year'], 'ass1' => 1, 'ass2' => 0),
+            array('date' => $date[2]['mon'].'/'.$date[2]['mday'].'/'.$date[2]['year'], 'ass1' => 3, 'ass2' => 1),
+            array('date' => $date[3]['mon'].'/'.$date[3]['mday'].'/'.$date[3]['year'], 'ass1' => 1, 'ass2' => 0),
+            array('date' => $date[4]['mon'].'/'.$date[4]['mday'].'/'.$date[4]['year'], 'ass1' => 0, 'ass2' => 3),
+            array('date' => $date[5]['mon'].'/'.$date[5]['mday'].'/'.$date[5]['year'], 'ass1' => 0, 'ass2' => 0),
+            array('date' => $date[6]['mon'].'/'.$date[6]['mday'].'/'.$date[6]['year'], 'ass1' => 1, 'ass2' => 4),
+        );
+        
+        return json_encode($array);
     }
 
 }
