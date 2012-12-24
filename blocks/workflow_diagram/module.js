@@ -19,8 +19,8 @@ M.block_workflow_diagram = {
 
             var mychart = new Y.Chart({
                 dataProvider:myDataValues, 
-                render:"#mychart", 
-                type:"combo", 
+                render:"#mychart", //Indica el <div> on es mostrarà
+                type:"combo", //Tipus de gràfica, es pot canviar
                 width: 500,
                 height: 300,
                 horizontalGridlines: {

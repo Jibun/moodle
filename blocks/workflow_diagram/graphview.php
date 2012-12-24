@@ -26,10 +26,25 @@ $wfurl = new moodle_url('/blocks/workflow_diagram/graphview.php', array('id' => 
 $editnode = $settingsnode->add(get_string('graphview', 'block_workflow_diagram'), $wfurl);
 $editnode->make_active();
 
+//Printar header
 echo $OUTPUT->header();
+
+
+/*
+ * Printar pàgina principal
+ */
+
+
+//Equival a echo '<div id=mychart></div>';
+echo html_writer::tag('div', null, array('id' => 'mychart')); //Div que conté la gràfica
 
 if (ajaxenabled()) {
     $PAGE->requires->js_init_call('M.block_workflow_diagram.printgraph');
 }
 
+/*
+ * Fi de pàgina principal
+ */
+
+//Printar resta d'elements de moodle
 echo $OUTPUT->footer();
