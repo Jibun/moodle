@@ -155,7 +155,11 @@ class block_workflow_diagram_manager {
                 array('cmid' => $cmid));
     }
     
-    /*
+    /**
+     * Get array of activities
+     * @param int $courseid
+     * @param date $date
+     * @return array of activities (id and hoursperday)
      * 
      */
     public function block_workflow_diagram_get_activities_array_for_day($courseid, $date) {
@@ -172,8 +176,10 @@ class block_workflow_diagram_manager {
         return $DB->get_records_sql($sql, $params);
     }
     
-    /*
-     * 
+    /**
+     * Get a JSON string with all the chart information
+     * @param integer $courseid
+     * @return string json representation of data array
      */
     public function block_workflow_diagram_get_json_array_for_chart($courseid) {
         //Get current week
@@ -186,32 +192,45 @@ class block_workflow_diagram_manager {
             $date[$i] = usergetdate($auxtime);
 
             $result = $this->block_workflow_diagram_get_activities_array_for_day($courseid, $auxtime);
+            
+            /* Debug messages
             echo 'Query '.$i.' result: ';
             print_r($result);
             echo '<br \>';
             echo 'Number of tasks: '; 
             print_r(count($result));
-            echo '<br \>';
+            echo '<br \>';*/
+            
+            $grapharray[$i] = array('date' => $date[$i]['mon'].'/'.$date[$i]['mday'].'/'.$date[$i]['year']);
+            
              if($result){ 
-                reset($result);
+                reset($result);    
                 for($j=0; $j<count($result); $j++){
-                $dataarray[$i][$j] = array("id" => current($result)->id, "hoursperday" => current($result)->hoursperday);
-                next($result);
+                    
+                     /* See http://php.net/manual/es/function.array-push.php
+                     * 
+                     * What the next line does is push back the hoursperday on the array
+                     * whith de id between the brackets.
+                     * 
+                     * Ex: $data[$key] = $value;
+                     * The "+0" is to convert the data to a number
+                     */
+                    $grapharray[$i][current($result)->id] = current($result)->hoursperday+0;
+                    
+                    next($result);
                 }
             }
-            echo 'Data array:';
-            
+            /*echo 'Data array:';
             print_r($dataarray[$i]);
-            echo '<br \>';
+            echo '<br \>';*/
         }
+        echo '<br \>'; //Space for better visualization
         
-        echo '<br \>';
-        
-        //Fill the data
-        
+        /* Kept this for testing
         $grapharray = array (
             array('date' => $date[0]['mon'].'/'.$date[0]['mday'].'/'.$date[0]['year'], 
-                $dataarray[0][0]['id'] => $dataarray[0][0]['hoursperday']),
+                $dataarray[0][0]['id'] => $dataarray[0][0]['hoursperday'],
+                $dataarray[0][1]['id'] => $dataarray[0][1]['hoursperday']),
             array('date' => $date[1]['mon'].'/'.$date[1]['mday'].'/'.$date[1]['year'], 
                 $dataarray[1][0]['id'] => $dataarray[1][0]['hoursperday']),
             array('date' => $date[2]['mon'].'/'.$date[2]['mday'].'/'.$date[2]['year'], 
@@ -225,6 +244,7 @@ class block_workflow_diagram_manager {
             array('date' => $date[6]['mon'].'/'.$date[6]['mday'].'/'.$date[6]['year'], 
                 $dataarray[6][0]['id'] => $dataarray[6][0]['hoursperday']),
         );
+         */
         
         return json_encode($grapharray);
     }
