@@ -184,9 +184,14 @@ class block_workflow_diagram_manager {
             $date[$i] = usergetdate($unixtime + ($i * $dayinseconds));
 
             $result = $this->block_workflow_diagram_get_activities_array_for_day($courseid, $unixtime);
+            echo 'Query '.$i.' result: ';
+            print_r($result);
+            echo '<br \>';
+            
             $dataarray[$i] = array("id" => $result->id, "hoursperday" => $result->hoursperday);
         }
         
+        echo '<br \>';
         
         //Fill the data
         
