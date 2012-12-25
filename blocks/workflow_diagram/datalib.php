@@ -189,10 +189,20 @@ class block_workflow_diagram_manager {
             echo 'Query '.$i.' result: ';
             print_r($result);
             echo '<br \>';
-            echo 'Numbr of tasks: '.sizeof($result);
+            echo 'Number of tasks: '; 
+            print_r(count($result));
             echo '<br \>';
+             if($result){ 
+                reset($result);
+                for($j=0; $j<count($result); $j++){
+                $dataarray[$i][$j] = array("id" => current($result)->id, "hoursperday" => current($result)->hoursperday);
+                next($result);
+                }
+            }
+            echo 'Data array:';
             
-            $dataarray[$i] = array("id" => $result->id, "hoursperday" => $result->hoursperday);
+            print_r($dataarray[$i]);
+            echo '<br \>';
         }
         
         echo '<br \>';
@@ -201,19 +211,19 @@ class block_workflow_diagram_manager {
         
         $grapharray = array (
             array('date' => $date[0]['mon'].'/'.$date[0]['mday'].'/'.$date[0]['year'], 
-                $dataarray[0]['id'] => $dataarray[0]['hoursperday']),
+                $dataarray[0][0]['id'] => $dataarray[0][0]['hoursperday']),
             array('date' => $date[1]['mon'].'/'.$date[1]['mday'].'/'.$date[1]['year'], 
-                $dataarray[1]['id'] => $dataarray[1]['hoursperday']),
+                $dataarray[1][0]['id'] => $dataarray[1][0]['hoursperday']),
             array('date' => $date[2]['mon'].'/'.$date[2]['mday'].'/'.$date[2]['year'], 
-                $dataarray[2]['id'] => $dataarray[2]['hoursperday']),
+                $dataarray[2][0]['id'] => $dataarray[2][0]['hoursperday']),
             array('date' => $date[3]['mon'].'/'.$date[3]['mday'].'/'.$date[3]['year'], 
-                $dataarray[3]['id'] => $dataarray[3]['hoursperday']),
+                $dataarray[3][0]['id'] => $dataarray[3][0]['hoursperday']),
             array('date' => $date[4]['mon'].'/'.$date[4]['mday'].'/'.$date[4]['year'], 
-                $dataarray[4]['id'] => $dataarray[4]['hoursperday']),
+                $dataarray[4][0]['id'] => $dataarray[4][0]['hoursperday']),
             array('date' => $date[5]['mon'].'/'.$date[5]['mday'].'/'.$date[5]['year'], 
-                $dataarray[5]['id'] => $dataarray[5]['hoursperday']),
+                $dataarray[5][0]['id'] => $dataarray[5][0]['hoursperday']),
             array('date' => $date[6]['mon'].'/'.$date[6]['mday'].'/'.$date[6]['year'], 
-                $dataarray[6]['id'] => $dataarray[6]['hoursperday']),
+                $dataarray[6][0]['id'] => $dataarray[6][0]['hoursperday']),
         );
         
         return json_encode($grapharray);
