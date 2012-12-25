@@ -161,15 +161,15 @@ class block_workflow_diagram_manager {
     public function block_workflow_diagram_get_activities_array_for_day($courseid, $date) {
         global $DB;
         
-        $midnightdate = usergetmidnight($date);
-        $params = array('date1' => $midnightdate, 'date2' => $midnightdate+(24*3600), 'course' => $courseid );
+        //$midnightdate = usergetmidnight($date);
+        $params = array('date1' => $date, 'date2' => $date+(24*3600), 'course' => $courseid );
         
         $sql = 'SELECT cm.id, wf.hoursperday
         FROM {block_workflow_diagram} wf 
         JOIN {course_modules} cm ON cm.id = wf.cmid
         WHERE :date1 >= wf.startdate AND :date2 <= wf.finishdate AND cm.course = :course';
         
-        return $DB->get_record_sql($sql, $params);
+        return $DB->get_records_sql($sql, $params);
     }
     
     /*
@@ -181,11 +181,15 @@ class block_workflow_diagram_manager {
         $unixtime = usergetmidnight(time()); //Seconds passed since...
         $dayinseconds = 86400; //Number of seconds in one day
         for ($i=0; $i<7; $i++) {
-            $date[$i] = usergetdate($unixtime + ($i * $dayinseconds));
+            
+            $auxtime = $unixtime + ($i * $dayinseconds);
+            $date[$i] = usergetdate(auxtime);
 
-            $result = $this->block_workflow_diagram_get_activities_array_for_day($courseid, $unixtime);
+            $result = $this->block_workflow_diagram_get_activities_array_for_day($courseid, $auxtime);
             echo 'Query '.$i.' result: ';
             print_r($result);
+            echo '<br \>';
+            echo 'Numbr of tasks: '.sizeof($result);
             echo '<br \>';
             
             $dataarray[$i] = array("id" => $result->id, "hoursperday" => $result->hoursperday);
