@@ -38,11 +38,11 @@ echo $OUTPUT->header();
 
 if (ajaxenabled()) { //Si tenim javascript
     
+    $result = $wdmanager->get_hoursperday_by_course_date($courseid, time());
+    echo html_writer::tag('div', 'Today\'s workload: '.$result, array('id' => 'daylyhours'));
+    
     $jsonatr1 = $wdmanager->block_workflow_diagram_get_json_array_for_chart($courseid);
-    echo html_writer::tag('div', 'Prova de array PHP a JSON: '.$jsonatr1, array('id' => 'debugtext'));
-
-    //El següent equival a echo '<div id=mychart></div>';
-    echo html_writer::tag('div', null, array('id' => 'mychart')); //Div que conté la gràfica
+    echo html_writer::tag('div', null, array('id' => 'mychart')); //Equival a echo '<div id=mychart></div>';
     $PAGE->requires->js_init_call('M.block_workflow_diagram.printgraph', array($jsonatr1));
 }
 else {

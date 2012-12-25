@@ -66,14 +66,17 @@ class block_workflow_diagram_manager {
     public function get_hoursperday_by_course_date($courseid, $date, $strictness = IGNORE_MISSING) {
         global $DB;
         
-        $params = array('date1' => $date, 'date2' => $date, 'course' => $courseid );
+        $midnightdate = usergetmidnight($date); //Midnight of the current day
+        
+        $params = array('date1' => $midnightdate, 'date2' => $midnightdate+(24*3600), 'course' => $courseid );
+        $aux1 = usergetmidnight($date);
         
         $sql = 'SELECT SUM(wf.hoursperday) as hours
         FROM {block_workflow_diagram} wf 
-        JOIN {course_modules} cm ON cm.id = wf.cmid 
+        JOIN {course_modules} cm ON cm.id = wf.cmid
         WHERE :date1 >= wf.startdate AND :date2 <= wf.finishdate AND cm.course = :course';
     
-        return $DB->get_record_sql($sql, $params, $strictness);
+        return $DB->get_record_sql($sql, $params, $strictness)->hours;
      }
 
      
@@ -152,29 +155,59 @@ class block_workflow_diagram_manager {
                 array('cmid' => $cmid));
     }
     
-    public function block_workflow_diagram_get_json_array_for_chart($courseid) {
+    /*
+     * 
+     */
+    public function block_workflow_diagram_get_activities_array_for_day($courseid, $date) {
+        global $DB;
         
+        $midnightdate = usergetmidnight($date);
+        $params = array('date1' => $midnightdate, 'date2' => $midnightdate+(24*3600), 'course' => $courseid );
+        
+        $sql = 'SELECT cm.id, wf.hoursperday
+        FROM {block_workflow_diagram} wf 
+        JOIN {course_modules} cm ON cm.id = wf.cmid
+        WHERE :date1 >= wf.startdate AND :date2 <= wf.finishdate AND cm.course = :course';
+        
+        return $DB->get_record_sql($sql, $params);
+    }
+    
+    /*
+     * 
+     */
+    public function block_workflow_diagram_get_json_array_for_chart($courseid) {
         //Get current week
         
-        $unixtime = time(); //Seconds passed since...
+        $unixtime = usergetmidnight(time()); //Seconds passed since...
         $dayinseconds = 86400; //Number of seconds in one day
         for ($i=0; $i<7; $i++) {
             $date[$i] = usergetdate($unixtime + ($i * $dayinseconds));
+
+            $result = $this->block_workflow_diagram_get_activities_array_for_day($courseid, $unixtime);
+            $dataarray[$i] = array("id" => $result->id, "hoursperday" => $result->hoursperday);
         }
+        
         
         //Fill the data
         
-        $array = array (
-            array('date' => $date[0]['mon'].'/'.$date[0]['mday'].'/'.$date[0]['year'], 'ass1' => 2, 'ass2' => 1),
-            array('date' => $date[1]['mon'].'/'.$date[1]['mday'].'/'.$date[1]['year'], 'ass1' => 1, 'ass2' => 0),
-            array('date' => $date[2]['mon'].'/'.$date[2]['mday'].'/'.$date[2]['year'], 'ass1' => 3, 'ass2' => 1),
-            array('date' => $date[3]['mon'].'/'.$date[3]['mday'].'/'.$date[3]['year'], 'ass1' => 1, 'ass2' => 0),
-            array('date' => $date[4]['mon'].'/'.$date[4]['mday'].'/'.$date[4]['year'], 'ass1' => 0, 'ass2' => 3),
-            array('date' => $date[5]['mon'].'/'.$date[5]['mday'].'/'.$date[5]['year'], 'ass1' => 0, 'ass2' => 0),
-            array('date' => $date[6]['mon'].'/'.$date[6]['mday'].'/'.$date[6]['year'], 'ass1' => 1, 'ass2' => 4),
+        $grapharray = array (
+            array('date' => $date[0]['mon'].'/'.$date[0]['mday'].'/'.$date[0]['year'], 
+                $dataarray[0]['id'] => $dataarray[0]['hoursperday']),
+            array('date' => $date[1]['mon'].'/'.$date[1]['mday'].'/'.$date[1]['year'], 
+                $dataarray[1]['id'] => $dataarray[1]['hoursperday']),
+            array('date' => $date[2]['mon'].'/'.$date[2]['mday'].'/'.$date[2]['year'], 
+                $dataarray[2]['id'] => $dataarray[2]['hoursperday']),
+            array('date' => $date[3]['mon'].'/'.$date[3]['mday'].'/'.$date[3]['year'], 
+                $dataarray[3]['id'] => $dataarray[3]['hoursperday']),
+            array('date' => $date[4]['mon'].'/'.$date[4]['mday'].'/'.$date[4]['year'], 
+                $dataarray[4]['id'] => $dataarray[4]['hoursperday']),
+            array('date' => $date[5]['mon'].'/'.$date[5]['mday'].'/'.$date[5]['year'], 
+                $dataarray[5]['id'] => $dataarray[5]['hoursperday']),
+            array('date' => $date[6]['mon'].'/'.$date[6]['mday'].'/'.$date[6]['year'], 
+                $dataarray[6]['id'] => $dataarray[6]['hoursperday']),
         );
         
-        return json_encode($array);
+        return json_encode($grapharray);
     }
 
 }

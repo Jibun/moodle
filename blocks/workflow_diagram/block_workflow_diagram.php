@@ -57,6 +57,11 @@ class block_workflow_diagram extends block_list {
         $url = new moodle_url('/blocks/workflow_diagram/graphview.php', array('blockid' => $this->instance->id, 'courseid' => $COURSE->id));
         $this->content->items[] = html_writer::link($url, get_string('viewgraphic', 'block_workflow_diagram'));
         
+        //No funciona no sé per què (es bloqueja la pàgina)
+        //$wf = new block_workflow_diagram_manager();
+        //$dayworkload = wf->get_hoursperday_by_course_date($course->id, time());
+        $this->content->items[] = 'id '.$course->id;
+        
         return $this->content;
     }
 }
