@@ -183,7 +183,7 @@ class block_workflow_diagram_manager {
         for ($i=0; $i<7; $i++) {
             
             $auxtime = $unixtime + ($i * $dayinseconds);
-            $date[$i] = usergetdate(auxtime);
+            $date[$i] = usergetdate($auxtime);
 
             $result = $this->block_workflow_diagram_get_activities_array_for_day($courseid, $auxtime);
             echo 'Query '.$i.' result: ';
