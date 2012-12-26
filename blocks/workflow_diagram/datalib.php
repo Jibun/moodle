@@ -182,8 +182,8 @@ class block_workflow_diagram_manager {
      * @return string json representation of data array
      */
     public function block_workflow_diagram_get_json_array_for_chart($courseid) {
-        //Get current week
         
+        //Get current week
         $unixtime = usergetmidnight(time()); //Seconds passed since...
         $dayinseconds = 86400; //Number of seconds in one day
         for ($i=0; $i<7; $i++) {
@@ -201,7 +201,7 @@ class block_workflow_diagram_manager {
             print_r(count($result));
             echo '<br \>';*/
             
-            $grapharray[$i] = array('date' => $date[$i]['mon'].'/'.$date[$i]['mday'].'/'.$date[$i]['year']);
+            $grapharray[$i] = array('date' => $date[$i]['mday'].'/'.$date[$i]['mon'].'/'.$date[$i]['year']);
             
              if($result){ 
                 reset($result);    
