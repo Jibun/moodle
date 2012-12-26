@@ -49,17 +49,19 @@ $wdmanager = new block_workflow_diagram_manager();
 
 if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
     $cmid = optional_param('cmid', false, PARAM_INT);
-    $inidate = optional_param('initialdate', false, PARAM_RAW);
-    $enddate = optional_param('finaldate', false, PARAM_RAW);
+    $inidateday = optional_param('initialdateday', false, PARAM_RAW);
+    $inidatemonth = optional_param('initialdatemonth', false, PARAM_RAW);
+    $inidateyear = optional_param('initialdateyear', false, PARAM_RAW);
+    $enddateday = optional_param('finaldateday', false, PARAM_RAW);
+    $enddatemonth = optional_param('finaldatemonth', false, PARAM_RAW);
+    $enddateyear = optional_param('finaldateyear', false, PARAM_RAW);
     $hours = optional_param('hours', 0, PARAM_INT);
-    if ($cmid === "" || $inidate === "" || $enddate === "" || $hours === "") {
+    if ($cmid === "" || $hours === "") {
         echo "error!! inutil!";
     } else {
-        $splited = explode("-", $inidate);
-        $inidate = make_timestamp($splited[0], $splited[1], $splited[2]);
+        $inidate = make_timestamp($inidateyear, $inidatemonth, $inidateday);
 
-        $splited = explode("-", $enddate);
-        $enddate = make_timestamp($splited[0], $splited[1], $splited[2]);
+        $enddate = make_timestamp($enddateyear, $enddatemonth, $enddateday);
 
         $period = abs($enddate - $inidate);
         if ($period = floor($period / DAYSECS)) {
@@ -109,10 +111,6 @@ for ($i = 0; $i < 13; $i++) {
             $time2 = 'duedate';
         }else if($activitiesarray[$i] === 'forum'){
             //nada
-            /*$strtime1 = 'assesstimestart';
-            $strtime2 = 'assesstimefinish';
-            $time1 = 'assesstimestart';
-            $time2 = 'assesstimefinish';*/
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'data'){
             $strtime1 = 'availablefromdate';
@@ -135,10 +133,6 @@ for ($i = 0; $i < 13; $i++) {
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'glossary'){
             //nada
-            /*$strtime1 = 'assesstimestart';
-            $strtime2 = 'assesstimefinish';
-            $time1 = 'assesstimestart';
-            $time2 = 'assesstimefinish';*/
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'lesson'){
             $strtime1 = 'lessonopens';
@@ -160,18 +154,20 @@ for ($i = 0; $i < 13; $i++) {
         
         
         $table = new html_table();
-        if($nodatefields)
+        if($nodatefields){
             $table->head = array($stractivities, get_string('startdate', 'block_workflow_diagram'),
             get_string('enddate', 'block_workflow_diagram'), get_string('hoursofwork', 'block_workflow_diagram'),
             get_string('save', 'block_workflow_diagram') . " " . get_string('workflow', 'block_workflow_diagram'),
             get_string('delete', 'block_workflow_diagram') . " " . get_string('workflow', 'block_workflow_diagram'));
-        else
+            $table->align = array('left', 'left', 'left', 'left', 'center', 'center');
+        }else{
             $table->head = array($stractivities, get_string($strtime1, $activitiesarray[$i]), 
             get_string($strtime2, $activitiesarray[$i]), get_string('startdate', 'block_workflow_diagram'),
             get_string('enddate', 'block_workflow_diagram'), get_string('hoursofwork', 'block_workflow_diagram'),
             get_string('save', 'block_workflow_diagram') . " " . get_string('workflow', 'block_workflow_diagram'),
             get_string('delete', 'block_workflow_diagram') . " " . get_string('workflow', 'block_workflow_diagram'));
-        $table->align = array('left');
+            $table->align = array('left', 'left', 'left', 'left', 'left', 'left', 'center', 'center');
+        }
         $table->data = array();
         foreach ($activities as $activity) {
             $cm = get_coursemodule_from_instance($activitiesarray[$i], $activity->id, 0, false, MUST_EXIST);
@@ -182,64 +178,47 @@ for ($i = 0; $i < 13; $i++) {
                 $date1 = '-';
                 if ($activity->$time1) {
                     $date1 = userdate($activity->$time1);
-                    $datearray1 = usergetdate($activity->$time1);
                 }
                 $date2 = '-';
                 if ($activity->$time2) {
                     $date2 = userdate($activity->$time2);
-                    $datearray2 = usergetdate($activity->$time2);
                 }
             }
 
             if (!$wf = $wdmanager->block_workflow_diagram_get_instance($cm->id)) {
                 if(!$nodatefields){
-                    if (strlen($datearray1['mon']) === 1) {
-                        $datearray1['mon'] = '0' . $datearray1['mon'];
-                    }
-                    if (strlen($datearray1['mday']) === 1) {
-                        $datearray1['mday'] = '0' . $datearray1['mday'];
-                    }
-                    if (strlen($datearray2['mon']) === 1) {
-                        $datearray2['mon'] = '0' . $datearray2['mon'];
-                    }
-                    if (strlen($datearray2['mday']) === 1) {
-                        $datearray2['mday'] = '0' . $datearray2['mday'];
-                    }
-                    
                     if ($activity->$time1) {
-                        $inidate = '<input type="date" name="initialdate" value="' . $datearray1['year'] . "-" . $datearray1['mon'] . "-" . $datearray1['mday'] . '"/>';
+                        $inidate = html_writer::select_time('days', 'initialdateday', $activity->$time1).
+                                html_writer::select_time('months', 'initialdatemonth', $activity->$time1).
+                                html_writer::select_time('years', 'initialdateyear', $activity->$time1);
                     } else {
-                        $inidate = '<input type="date" name="initialdate"/>';
+                        $inidate = html_writer::select_time('days', 'initialdateday').
+                                html_writer::select_time('months', 'initialdatemonth').
+                                html_writer::select_time('years', 'initialdateyear');
                     }
                     if ($activity->$time2) {
-                        $enddate = '<input type="date" name="finaldate" value="' . $datearray2['year'] . "-" . $datearray2['mon'] . "-" . $datearray2['mday'] . '"/>';
+                        $enddate = html_writer::select_time('days', 'finaldateday', $activity->$time2).
+                                html_writer::select_time('months', 'finaldatemonth', $activity->$time2).
+                                html_writer::select_time('years', 'finaldateyear', $activity->$time2);
                     } else {
-                        $enddate = '<input type="date" name="finaldate"/>';
+                        $enddate = html_writer::select_time('days', 'finaldateday').
+                                html_writer::select_time('months', 'finaldatemonth').
+                                html_writer::select_time('years', 'finaldateyear');
                     }
                 }
                 
-                $hours = '<input type="text" name="hours" value="0" />';
+                $hours = '<input type="text" size ="2" name="hours" value="0" />';
 
                 $boton = $formhiddensave . $formhiddencm . '<input type="submit" class="pointssubmitbutton" value="' . get_string('create', 'block_workflow_diagram') . '" />' . $formend;
                 $delete = '';
             } else {
-                $datearray = usergetdate($wf->startdate);
-                if (strlen($datearray['mon']) === 1) {
-                    $datearray['mon'] = '0' . $datearray['mon'];
-                }
-                if (strlen($datearray['mday']) === 1) {
-                    $datearray['mday'] = '0' . $datearray['mday'];
-                }
-                $inidate = '<input type="date" name="initialdate" value="' . $datearray['year'] . "-" . $datearray['mon'] . "-" . $datearray['mday'] . '"/>';
-                $datearray = usergetdate($wf->finishdate);
-                if (strlen($datearray['mon']) === 1) {
-                    $datearray['mon'] = '0' . $datearray['mon'];
-                }
-                if (strlen($datearray['mday']) === 1) {
-                    $datearray['mday'] = '0' . $datearray['mday'];
-                }
-                $enddate = '<input type="date" name="finaldate" value="' . $datearray['year'] . "-" . $datearray['mon'] . "-" . $datearray['mday'] . '"/>';
-                $hours = '<input type="text" name="hours" value="' . $wf->hours . '" />';
+                $inidate = html_writer::select_time('days', 'initialdateday', $wf->startdate).
+                                html_writer::select_time('months', 'initialdatemonth', $wf->startdate).
+                                html_writer::select_time('years', 'initialdateyear', $wf->startdate);
+                $enddate = html_writer::select_time('days', 'finaldateday', $wf->finishdate).
+                                html_writer::select_time('months', 'finaldatemonth', $wf->finishdate).
+                                html_writer::select_time('years', 'finaldateyear', $wf->finishdate);
+                $hours = '<input type="text" size ="2" name="hours" value="' . $wf->hours . '" />';
                 $boton = $formhiddensave . $formhiddencm . '<input type="submit" class="pointssubmitbutton" value="' . get_string('update', 'block_workflow_diagram') . '" />' . $formend;
                 $delete = $formstart . $formhiddendelete . $formhiddencm . '<input type="submit" class="pointssubmitbutton" value="' . get_string('delete', 'block_workflow_diagram') . '" />' . $formend;
             }
