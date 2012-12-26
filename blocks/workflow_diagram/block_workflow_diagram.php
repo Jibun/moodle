@@ -29,6 +29,10 @@ class block_workflow_diagram extends block_list {
     function init() {
         $this->title = get_string('pluginname', 'block_workflow_diagram');
     }
+    
+    public function applicable_formats() {
+        return array('course-view' => true);
+    }
 
     function get_content() {
         global $CFG, $COURSE;
