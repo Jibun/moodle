@@ -40,3 +40,4 @@ $string['wfsettings'] = 'WfD Settings';
 $string['graphview'] = 'WfD: Graph view';
 $string['invalidcourse'] = 'Invalid course';
 $string['jsdisabled'] = 'Error: Javascript is disabled';
+$string['todayworkload'] = 'Today\'s workload: ';

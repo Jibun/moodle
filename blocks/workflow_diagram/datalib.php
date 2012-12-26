@@ -156,6 +156,32 @@ class block_workflow_diagram_manager {
     }
     
     /**
+     * Get activity name
+     * @param int $cmid
+     * @return activity name
+     * 
+     */
+    public function block_workflow_diagram_get_activity_name($cmid) {
+        global $DB;
+        
+        $params = array('cmid'=>$cmid);
+
+        if (!$modulename = $DB->get_field_sql("SELECT md.name
+                                                 FROM {modules} md
+                                                 JOIN {course_modules} cm ON cm.module = md.id
+                                                WHERE cm.id = :cmid", $params)) {
+            return false;
+        }
+
+        $sql = "SELECT m.name
+                  FROM {course_modules} cm
+                       JOIN {".$modulename."} m ON m.id = cm.instance
+                 WHERE cm.id = :cmid";
+
+        return $DB->get_record_sql($sql, $params);
+    }
+    
+    /**
      * Get array of activities
      * @param int $courseid
      * @param date $date
@@ -185,10 +211,10 @@ class block_workflow_diagram_manager {
         
         //Get current week
         $unixtime = usergetmidnight(time()); //Seconds passed since...
-        $dayinseconds = 86400; //Number of seconds in one day
+        //$dayinseconds = 86400; //Number of seconds in one day
         for ($i=0; $i<7; $i++) {
             
-            $auxtime = $unixtime + ($i * $dayinseconds);
+            $auxtime = $unixtime + ($i * DAYSECS);
             $date[$i] = usergetdate($auxtime);
 
             $result = $this->block_workflow_diagram_get_activities_array_for_day($courseid, $auxtime);
@@ -207,6 +233,8 @@ class block_workflow_diagram_manager {
                 reset($result);    
                 for($j=0; $j<count($result); $j++){
                     
+                    $name = $this->block_workflow_diagram_get_activity_name(current($result)->id);
+                    
                      /* See http://php.net/manual/es/function.array-push.php
                      * 
                      * What the next line does is push back the hoursperday on the array
@@ -215,7 +243,7 @@ class block_workflow_diagram_manager {
                      * Ex: $data[$key] = $value;
                      * The "+0" is to convert the data to a number
                      */
-                    $grapharray[$i][current($result)->id] = current($result)->hoursperday+0;
+                    $grapharray[$i][current($result)->id.'-'.$name->name] = current($result)->hoursperday+0;
                     
                     next($result);
                 }

@@ -39,7 +39,7 @@ echo $OUTPUT->header();
 if (ajaxenabled()) { //Si tenim javascript
     
     $result = $wdmanager->get_hoursperday_by_course_date($courseid, time());
-    echo html_writer::tag('div', 'Today\'s workload: '.$result, array('id' => 'daylyhours'));
+    echo html_writer::tag('div', get_string('todayworkload', 'block_workflow_diagram').$result, array('id' => 'daylyhours'));
     
     $jsonatr1 = $wdmanager->block_workflow_diagram_get_json_array_for_chart($courseid);
     echo html_writer::tag('div', null, array('id' => 'mychart')); //Equival a echo '<div id=mychart></div>';
