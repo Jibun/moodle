@@ -68,7 +68,6 @@ class block_workflow_diagram_manager {
         $midnightdate = usergetmidnight($date); //Midnight of the current day
         
         $params = array('date1' => $midnightdate, 'date2' => $midnightdate+(24*3600), 'course' => $courseid );
-        $aux1 = usergetmidnight($date);
         
         $sql = 'SELECT SUM(wf.hoursperday) as hours
         FROM {block_workflow_diagram} wf 
