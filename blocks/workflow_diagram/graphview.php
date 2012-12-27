@@ -1,5 +1,30 @@
 <?php
- 
+
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Shows information and the diagram
+ *
+ * @package   blocks
+ * @subpackage workflow_diagram
+ * @author  Sergi Rodríguez
+ * @copyright (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 require_once('../../config.php');
 require_once($CFG->dirroot . '/blocks/workflow_diagram/datalib.php');
 $wdmanager = new block_workflow_diagram_manager();
@@ -30,28 +55,43 @@ $editnode->make_active();
 //Printar header
 echo $OUTPUT->header();
 
+$i = 0;
+if (optional_param('nextweek', false, PARAM_BOOL) || optional_param('lastweek', false, PARAM_BOOL) && confirm_sesskey()) {
+    $i = optional_param('counter', false, PARAM_INTEGER);
+    if (optional_param('nextweek', false, PARAM_BOOL))
+        $i++;
+    elseif (optional_param('lastweek', false, PARAM_BOOL))
+        $i--;
+}
+    $formstart = '<form method="post" action="graphview.php?id=' . $id . '" class="workflowform">
+        <input type="hidden" name="sesskey" value="' . sesskey() . '" />
+            <input type="hidden" name="courseid" value="' . $courseid . '" />
+                <input type="hidden" name="blockid" value="' . $blockid . '" />
+                    <input type="hidden" name="counter" value="' . $i . '" />';
+    $formend = '</form>';
+    $formhiddennext = '<input type="hidden" name="nextweek" value="1" />';
+    $formhiddenlast = '<input type="hidden" name="lastweek" value="1" />';
+    $button1 = $formstart . $formhiddennext. '<input type="submit" class="pointssubmitbutton" value="' . get_string('next', 'block_workflow_diagram') . '" />' . $formend;
+    $button2 = $formstart . $formhiddenlast. '<input type="submit" class="pointssubmitbutton" value="' . get_string('last', 'block_workflow_diagram') . '" />' . $formend;
 
-/*
- * Printar pàgina principal
- */
-
-
-if (ajaxenabled()) { //Si tenim javascript
+//Print page
+if (ajaxenabled()) {
     
     $result = $wdmanager->get_hoursperday_by_course_date($courseid, time());
-    echo html_writer::tag('div', get_string('todayworkload', 'block_workflow_diagram').$result, array('id' => 'daylyhours'));
+    echo html_writer::tag('div', get_string('todayworkload', 'block_workflow_diagram').$result.'<br /><br />', array('id' => 'daylyhours'));
     
-    $jsonatr1 = $wdmanager->block_workflow_diagram_get_json_array_for_chart($courseid);
-    echo html_writer::tag('div', null, array('id' => 'mychart')); //Equival a echo '<div id=mychart></div>';
-    $PAGE->requires->js_init_call('M.block_workflow_diagram.printgraph', array($jsonatr1));
+    $time = time() + ($i * WEEKSECS);
+    $jsondata = $wdmanager->block_workflow_diagram_get_json_array_for_chart($courseid, $time);
+    echo html_writer::tag('div', get_string('weekdiagram', 'block_workflow_diagram'), array('id' => 'mychart')); //Equival a echo '<div id=mychart></div>';
+    $PAGE->requires->js_init_call('M.block_workflow_diagram.printgraph', array($jsondata));
 }
 else {
     echo html_writer::tag('div', get_string('jsdisabled', 'block_workflow_diagram'), array('id' => 'mychart')); //Div que conté la gràfica
 }
 
-/*
- * Fi de pàgina principal
- */
+    echo html_writer::tag('div', '<br />'.$button2.'<br \>'.$button1, array('id' => 'buttons'));
+    //echo html_writer::tag('div', $button2, array('id' => 'buttons'));
 
-//Printar resta d'elements de moodle
+
+//Print moodle elements
 echo $OUTPUT->footer();
