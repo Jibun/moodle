@@ -44,7 +44,6 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
  
 require_login($course);
 $PAGE->set_url('/blocks/workflow_diagram/graphview.php', array('id' => $courseid));
-$PAGE->set_title(get_string("pluginname", "block_workflow_diagram"));
 $PAGE->set_pagelayout('incourse');
 $PAGE->set_heading($course->fullname);
 
