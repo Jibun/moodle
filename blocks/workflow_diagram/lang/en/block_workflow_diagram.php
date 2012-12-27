@@ -44,3 +44,4 @@ $string['todayworkload'] = 'Today\'s workload: ';
 $string['weekdiagram'] = 'Workload distribution:';
 $string['next'] = 'Next week';
 $string['last'] = 'Last week';
+$string['editerror'] = 'Hours fild empty or start date bigger than finish date.';

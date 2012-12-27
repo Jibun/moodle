@@ -44,3 +44,4 @@ $string['todayworkload'] = 'Carga de trabajo para hoy: ';
 $string['weekdiagram'] = 'Distribución de carga de trabajo: ';
 $string['next'] = 'Siguiente semana';
 $string['last'] = 'Anterior semana';
+$string['editerror'] = 'Campo de horas vacío o fecha de inicio mayor a la de final.';

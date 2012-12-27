@@ -47,6 +47,7 @@ echo $OUTPUT->header();
 require_once($CFG->dirroot . '/blocks/workflow_diagram/datalib.php');
 $wdmanager = new block_workflow_diagram_manager();
 
+// Look if the buttons create, update or delete have been pressed.
 if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
     $cmid = optional_param('cmid', false, PARAM_INT);
     $inidateday = optional_param('initialdateday', false, PARAM_RAW);
@@ -56,20 +57,19 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
     $enddatemonth = optional_param('finaldatemonth', false, PARAM_RAW);
     $enddateyear = optional_param('finaldateyear', false, PARAM_RAW);
     $hours = optional_param('hours', 0, PARAM_INT);
-    if ($cmid === "" || $hours === "") {
-        echo "error!! inutil!";
+    
+    $inidate = make_timestamp($inidateyear, $inidatemonth, $inidateday);
+    $enddate = make_timestamp($enddateyear, $enddatemonth, $enddateday);
+    
+    if ($hours === "" || ($enddate-$inidate)<0) {
+        echo get_string('editerror', 'block_workflow_diagram');
     } else {
-        $inidate = make_timestamp($inidateyear, $inidatemonth, $inidateday);
-
-        $enddate = make_timestamp($enddateyear, $enddatemonth, $enddateday);
-
         $period = abs($enddate - $inidate);
         if ($period = floor($period / DAYSECS)) {
             $hoursperday = round($hours / $period, 2);
         } else {
             $hoursperday = 0;
         }
-        //echo $cmid . ' ' . $inidate . ' ' . $enddate . ' ' . $hours;
         $wdmanager->add_modify_workflow_diagram_add_or_modify_instance($cmid, $inidate, $enddate, $hours, $hoursperday);
     }
 } else if (optional_param('delete', false, PARAM_BOOL) && confirm_sesskey()) {
@@ -84,16 +84,17 @@ $formhiddensave = '<input type="hidden" name="sesskey" value="' . sesskey() . '"
 $formhiddendelete = '<input type="hidden" name="sesskey" value="' . sesskey() . '" />
                         <input type="hidden" name="delete" value="1" />';
 
+//Array with all the activities
 $activitiesarray = array('assign', 'chat', 'choice', 'data', 'forum', 'glossary', 'lesson', 
     'lti', 'quiz', 'scorm', 'survey', 'wiki', 'workshop');
 
 $noactivities = true;
 
+//Print a table for each activity
 for ($i = 0; $i < 13; $i++) {
     $stractivities = get_string("modulenameplural", $activitiesarray[$i]);
     $activities = get_all_instances_in_course($activitiesarray[$i], $course);
     if ($activities) {
-
         $nodatefields = false;
         $strtime1 = 'nothing';
         $strtime2 = 'nothing';
@@ -110,7 +111,6 @@ for ($i = 0; $i < 13; $i++) {
             $time1 = 'allowsubmissionsfromdate';
             $time2 = 'duedate';
         }else if($activitiesarray[$i] === 'forum'){
-            //nada
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'data'){
             $strtime1 = 'availablefromdate';
@@ -118,10 +118,8 @@ for ($i = 0; $i < 13; $i++) {
             $time1 = 'timeavailablefrom';
             $time2 = 'timeavailableto';
         }else if($activitiesarray[$i] === 'lti'){
-            //nada
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'chat'){
-            //nada
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'choice'){
             $strtime1 = 'choiceopen';
@@ -129,10 +127,8 @@ for ($i = 0; $i < 13; $i++) {
             $time1 = 'timeopen';
             $time2 = 'timeclose';
         }else if($activitiesarray[$i] === 'survey'){
-            //nada
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'glossary'){
-            //nada
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'lesson'){
             $strtime1 = 'lessonopens';
@@ -140,10 +136,8 @@ for ($i = 0; $i < 13; $i++) {
             $time1 = 'available';
             $time2 = 'deadline';
         }else if($activitiesarray[$i] === 'workshop'){
-            //nada
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'wiki'){
-            //nada
             $nodatefields = true;
         }else if($activitiesarray[$i] === 'scorm'){
             $strtime1 = 'scormopen';
@@ -151,7 +145,6 @@ for ($i = 0; $i < 13; $i++) {
             $time1 = 'timeopen';
             $time2 = 'timeclose';
         }
-        
         
         $table = new html_table();
         if($nodatefields){
@@ -237,6 +230,7 @@ for ($i = 0; $i < 13; $i++) {
     }
 }
 
+//If there isn't any activity
 if ($noactivities) {
     notice(get_string('thereareno', 'moodle', $stractivities), "../../course/view.php?id=$course->id");
     die;
