@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="blocks/community/db" VERSION="20120122" COMMENT="XMLDB file for Moodle blocks/workflow_diagram"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="block_workflow_diagram" COMMENT="Workflow diagram block">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="cmid"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="startdate"/>
+        <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="cmid" NEXT="finishdate"/>
+        <FIELD NAME="finishdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="startdate" NEXT="hours"/>
+        <FIELD NAME="hours" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="finishdate" NEXT="hoursperday"/>
+        <FIELD NAME="hoursperday" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="2" PREVIOUS="hours"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cmid"/>
+        <KEY NAME="cmid" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id" COMMENT="Reference to the activity we want to refere" PREVIOUS="primary"/>
+      </KEYS>
+      <!--<INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="The userid for the submission relating to this grade." NEXT="mailed"/>
+         <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid" COMMENT="The courseid for the submission relating to this grade." NEXT="mailed"/>
+      </INDEXES>-->
+    </TABLE>
+  </TABLES>
+</XMLDB>
