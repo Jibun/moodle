@@ -179,24 +179,22 @@ for ($i = 0; $i < 13; $i++) {
             }
 
             if (!$wf = $wdmanager->block_workflow_diagram_get_instance($cm->id)) {
+                $inidate = html_writer::select_time('days', 'initialdateday').
+                                html_writer::select_time('months', 'initialdatemonth').
+                                html_writer::select_time('years', 'initialdateyear');
+                $enddate = html_writer::select_time('days', 'finaldateday').
+                                html_writer::select_time('months', 'finaldatemonth').
+                                html_writer::select_time('years', 'finaldateyear');
                 if(!$nodatefields){
                     if ($activity->$time1) {
                         $inidate = html_writer::select_time('days', 'initialdateday', $activity->$time1).
                                 html_writer::select_time('months', 'initialdatemonth', $activity->$time1).
                                 html_writer::select_time('years', 'initialdateyear', $activity->$time1);
-                    } else {
-                        $inidate = html_writer::select_time('days', 'initialdateday').
-                                html_writer::select_time('months', 'initialdatemonth').
-                                html_writer::select_time('years', 'initialdateyear');
                     }
                     if ($activity->$time2) {
                         $enddate = html_writer::select_time('days', 'finaldateday', $activity->$time2).
                                 html_writer::select_time('months', 'finaldatemonth', $activity->$time2).
                                 html_writer::select_time('years', 'finaldateyear', $activity->$time2);
-                    } else {
-                        $enddate = html_writer::select_time('days', 'finaldateday').
-                                html_writer::select_time('months', 'finaldatemonth').
-                                html_writer::select_time('years', 'finaldateyear');
                     }
                 }
                 
