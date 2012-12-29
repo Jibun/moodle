@@ -368,7 +368,7 @@ if (!$courses) {
             // role assignment link
             if (has_capability('moodle/course:enrolreview', $coursecontext)) {
                 $url = new moodle_url('/enrol/users.php', array('id' => $acourse->id));
-                echo $OUTPUT->action_icon($url, new pix_icon('i/users', get_string('enrolledusers', 'enrol')));
+                echo $OUTPUT->action_icon($url, new pix_icon('t/enrolusers', get_string('enrolledusers', 'enrol')));
             }
 
             if (can_delete_course($acourse->id)) {
@@ -439,8 +439,11 @@ if (!$courses) {
         $movetocategories[$category->id] = get_string('moveselectedcoursesto');
         echo '<tr><td colspan="3" align="right">';
         echo html_writer::label(get_string('moveselectedcoursesto'), 'movetoid', false, array('class' => 'accesshide'));
-        echo html_writer::select($movetocategories, 'moveto', $category->id, null, array('id'=>'movetoid'));
-        $PAGE->requires->js_init_call('M.util.init_select_autosubmit', array('movecourses', 'movetoid', false));
+        echo html_writer::select($movetocategories, 'moveto', $category->id, null, array('id'=>'movetoid', 'class' => 'autosubmit'));
+        $PAGE->requires->yui_module('moodle-core-formautosubmit',
+            'M.core.init_formautosubmit',
+            array(array('selectid' => 'movetoid', 'nothing' => $category->id))
+        );
         echo '<input type="hidden" name="id" value="'.$category->id.'" />';
         echo '</td></tr>';
     }
